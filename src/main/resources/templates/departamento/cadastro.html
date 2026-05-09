@@ -65,7 +65,11 @@
         </nav>
 
         <div class="container" id="cadastro">
-          <form th:action="@{/departamentos/salvar}" th:object="${departamento}" method="POST">
+
+          <div th:replace="~{fragments/alert :: alert}"></div>
+
+          <form th:action="${departamento.id != null} ? @{/departamentos/editar} : @{/departamentos/salvar}" 
+                                                                    th:object="${departamento}" method="POST">
             <div class="form-row">
               <div class="form-group col-md-6">
                 <label for="nome">Departamento</label>
@@ -79,7 +83,7 @@
                 />
               </div>
             </div>
-            <input type="hidden" id="id" name="id" value="" />
+            <input type="hidden" th:field="*{id}" />
             <button type="submit" class="btn btn-primary btn-sm mt-3">
               Salvar
             </button>

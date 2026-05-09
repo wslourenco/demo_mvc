@@ -18,7 +18,7 @@ public class FuncionarioServiceImpl implements FuncionarioService {
     @Transactional(readOnly = false)
     @Override
     public void salvar(Funcionario funcionario) {
-        dao.save(funcionario);
+        dao.update(funcionario);
     }
 
     @Transactional(readOnly = false)

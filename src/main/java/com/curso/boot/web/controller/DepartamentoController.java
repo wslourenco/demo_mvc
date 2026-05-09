@@ -4,11 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.curso.boot.domain.Departamento;
 import com.curso.boot.service.DepartamentoService;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
@@ -25,13 +27,41 @@ public class DepartamentoController {
     }
 
     @GetMapping("/listar")
-    public String listar() {
+    public String listar(Model model) {
+        model.addAttribute("departamentos", service.buscarTodos());
         return "departamento/lista";
     }
 
+    @GetMapping("/editar/{id}")
+    public String preAlterar(@PathVariable Long id, Model model) {
+        model.addAttribute("departamento", service.buscarPorId(id));
+        return "departamento/cadastro";
+    }
+
     @PostMapping("/salvar")
-    public String salvar(Departamento departamento) {
+    public String salvar(Departamento departamento, RedirectAttributes attr) {
         service.salvar(departamento);
+        attr.addFlashAttribute("success", "Departamento salvo com sucesso!");
         return "redirect:/departamentos/cadastrar";
+    }
+
+    @PostMapping("/editar")
+    public String editar(Departamento departamento, RedirectAttributes attr) {
+        service.editar(departamento);
+        attr.addFlashAttribute("success", "Departamento alterado com sucesso!");
+        return "redirect:/departamentos/cadastrar";
+    }
+
+    @GetMapping("/excluir/{id}")
+    public String excluir(@PathVariable("id") Long id, RedirectAttributes attr) {
+        if (!service.departamentoTemCargo(id)) {
+            service.excluir(id);
+            attr.addFlashAttribute("success", "Departamento excluído com sucesso!");
+        } else {
+            attr.addFlashAttribute("error", "Não é possível excluir um departamento" +
+                    "que possui cargos associados!");
+
+        }
+        return "redirect:/departamentos/listar";
     }
 }

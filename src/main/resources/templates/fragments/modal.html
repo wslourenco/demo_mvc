@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pt" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+    <head><meta charset="UTF-8"/></head>
+    <body>
+        <div class="modal fade" tabindex="-1" role="dialog" id="myModal" th:fragment="modal">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Atenção</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Clique em Ok para proceder com a exclusão&hellip;</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button id="ok_confirm" type="button" class="btn btn-danger">Ok</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
