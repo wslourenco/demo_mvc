@@ -2,6 +2,7 @@ package com.curso.boot.web.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.curso.boot.domain.Departamento;
@@ -18,7 +19,8 @@ public class DepartamentoController {
     private DepartamentoService service;
 
     @GetMapping("/cadastrar")
-    public String cadastrar() {
+    public String cadastrar(Model model) {
+        model.addAttribute("departamento", new Departamento());
         return "departamento/cadastro";
     }
 
@@ -30,6 +32,6 @@ public class DepartamentoController {
     @PostMapping("/salvar")
     public String salvar(Departamento departamento) {
         service.salvar(departamento);
-        return "redirect:/departamentos/cadas";
+        return "redirect:/departamentos/cadastrar";
     }
 }

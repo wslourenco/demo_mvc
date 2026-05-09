@@ -1,0 +1,224 @@
+@startuml diagrama_classes
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+' ==================== DOMAIN ====================
+package "com.curso.boot.domain" #LightYellow {
+
+  abstract class AbstractEntity<ID> implements Serializable {
+    - id : Long
+    + getId() : Long
+    + setId(Long) : void
+    + hashCode() : int
+    + equals(Object) : boolean
+    + toString() : String
+  }
+
+  enum Uf {
+    AC, AL, AM, BA, CE, DF
+    ES, GO, MA, MT, MS, MG
+    PA, PB, PR, PE, PI, RJ
+    RN, RS, RO, RR, SC, SP
+    SE, TO
+    - sigla : String
+    - descricao : String
+    + getSigla() : String
+    + getDescricao() : String
+  }
+
+  class Endereco extends AbstractEntity {
+    - logradouro : String
+    - bairro : String
+    - cidade : String
+    - uf : Uf
+    - cep : String
+    - numero : Integer
+    - complemento : String
+    + getters / setters
+  }
+
+  class Departamento extends AbstractEntity {
+    - nome : String
+    - cargos : List<Cargo>
+    + getNome() : String
+    + setNome(String) : void
+    + getCargos() : List<Cargo>
+    + setCargos(List<Cargo>) : void
+  }
+
+  class Cargo extends AbstractEntity {
+    - nome : String
+    - departamento : Departamento
+    - funcionarios : List<Funcionario>
+    + getNome() : String
+    + setNome(String) : void
+    + getDepartamento() : Departamento
+    + setDepartamento(Departamento) : void
+    + getFuncionarios() : List<Funcionario>
+    + setFuncionarios(List<Funcionario>) : void
+  }
+
+  class Funcionario extends AbstractEntity {
+    - nome : String
+    - salario : BigDecimal
+    - dataEntrada : LocalDate
+    - dataSaida : LocalDate
+    - endereco : Endereco
+    - cargo : Cargo
+    + getters / setters
+  }
+
+  Endereco --> Uf
+  Departamento "1" o-- "N" Cargo : cargos
+  Cargo "1" o-- "N" Funcionario : funcionarios
+  Funcionario --> Cargo
+  Funcionario "1" *-- "1" Endereco : cascade ALL
+}
+
+' ==================== DAO ====================
+package "com.curso.boot.dao" #LightBlue {
+
+  abstract class AbstractDAO<T, PK> {
+    - entityClass : Class<T>
+    # entityManager : EntityManager
+    # getEntityManager() : EntityManager
+    + save(T) : void
+    + update(T) : void
+    + delete(PK) : void
+    + findById(PK) : T
+    + findAll() : List<T>
+    # createQuery(String, Object...) : List<T>
+  }
+
+  interface DepartamentoDAO {
+    + save(Departamento) : void
+    + update(Departamento) : void
+    + delete(Long) : void
+    + findById(Long) : Departamento
+    + findAll() : List<Departamento>
+    + departamentoTemCargo(Long) : boolean
+  }
+
+  interface CargoDAO {
+    + save(Cargo) : void
+    + update(Cargo) : void
+    + delete(Long) : void
+    + findById(Long) : Cargo
+    + findAll() : List<Cargo>
+  }
+
+  interface FuncionarioDAO {
+    + save(Funcionario) : void
+    + update(Funcionario) : void
+    + delete(Long) : void
+    + findById(Long) : Funcionario
+    + findAll() : List<Funcionario>
+  }
+
+  class DepartamentoDAOImpl extends AbstractDAO implements DepartamentoDAO {
+    + departamentoTemCargo(Long) : boolean
+  }
+
+  class CargoDAOImpl extends AbstractDAO implements CargoDAO {
+  }
+
+  class FuncionarioDAOImpl extends AbstractDAO implements FuncionarioDAO {
+  }
+}
+
+' ==================== SERVICE ====================
+package "com.curso.boot.service" #LightGreen {
+
+  interface DepartamentoService {
+    + salvar(Departamento) : void
+    + editar(Departamento) : void
+    + excluir(Long) : void
+    + buscarPorId(Long) : Departamento
+    + buscarTodos() : List<Departamento>
+  }
+
+  interface CargoService {
+    + salvar(Cargo) : void
+    + editar(Cargo) : void
+    + excluir(Long) : void
+    + buscarPorId(Long) : Cargo
+    + buscarTodos() : List<Cargo>
+  }
+
+  interface FuncionarioService {
+    + salvar(Funcionario) : void
+    + editar(Funcionario) : void
+    + excluir(Long) : void
+    + buscarPorId(Long) : Funcionario
+    + buscarTodos() : List<Funcionario>
+  }
+
+  class DepartamentoServiceImpl implements DepartamentoService {
+    - dao : DepartamentoDAO
+    + salvar(Departamento) : void
+    + editar(Departamento) : void
+    + excluir(Long) : void
+    + buscarPorId(Long) : Departamento
+    + buscarTodos() : List<Departamento>
+  }
+
+  class CargoServiceImpl implements CargoService {
+    - dao : CargoDAO
+    + salvar(Cargo) : void
+    + editar(Cargo) : void
+    + excluir(Long) : void
+    + buscarPorId(Long) : Cargo
+    + buscarTodos() : List<Cargo>
+  }
+
+  class FuncionarioServiceImpl implements FuncionarioService {
+    - dao : FuncionarioDAO
+    + salvar(Funcionario) : void
+    + editar(Funcionario) : void
+    + excluir(Long) : void
+    + buscarPorId(Long) : Funcionario
+    + buscarTodos() : List<Funcionario>
+  }
+
+  DepartamentoServiceImpl --> DepartamentoDAO
+  CargoServiceImpl --> CargoDAO
+  FuncionarioServiceImpl --> FuncionarioDAO
+}
+
+' ==================== CONTROLLERS ====================
+package "com.curso.boot.web.controller" #LightCoral {
+
+  class HomeController {
+    + home() : String
+  }
+
+  class DepartamentoController {
+    - service : DepartamentoService
+    + cadastrar(Model) : String
+    + listar() : String
+    + salvar(Departamento) : String
+  }
+
+  class CargoController {
+    + cadastrar() : String
+    + listar() : String
+  }
+
+  class FuncionarioController {
+    + cadastrar() : String
+    + listar() : String
+  }
+
+  DepartamentoController --> DepartamentoService
+}
+
+' ==================== APP ====================
+package "com.curso.boot" #Lavender {
+  class DemoMvcApplication {
+    + {static} main(String[]) : void
+  }
+}
+
+@enduml
